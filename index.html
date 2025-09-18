@@ -16,9 +16,50 @@ DOCTYPE html>  <html lang="en">
     <script src="https://cdn.jsdelivr.net/npm/tsparticles-slim@2.3.4/tsparticles.slim.min.js"></script>    
     <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.js"></script>    
     <script src="https://cdn.jsdelivr.net/npm/socket.io@4.7.2/client-dist/socket.io.min.js"></script>    
-    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>    
-    const API_BASE = "https://nuwa-simulator-simulation-with-agi.onrender.com";
-    <style>    
+    
+    <style>    <script>
+const API_BASE = "https://nuwa-simulator-simulation-with-agi.onrender.com";
+
+// Signup function
+async function signup() {
+  const username = document.getElementById("username").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch(${API_BASE}/api/signup, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, email, password })
+  });
+  const data = await res.json();
+  alert(JSON.stringify(data));
+}
+
+// Login function
+async function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch(${API_BASE}/api/login, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
+  });
+  const data = await res.json();
+  localStorage.setItem("token", data.token);
+  alert(JSON.stringify(data));
+}
+
+// Get user function
+async function getUser() {
+  const token = localStorage.getItem("token");
+  const res = await fetch(${API_BASE}/api/me, {
+    headers: { Authorization: Bearer ${token} }
+  });
+  const data = await res.json();
+  alert(JSON.stringify(data));
+}
+</script>
         :root {    
             --primary: #238636;    
             --primary-glow: rgba(35, 134, 54, 0.5);    
@@ -1805,6 +1846,7 @@ async function getUser() {
 </script> </body>    
 
 </html> 
+
 
 
 
