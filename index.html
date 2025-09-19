@@ -1810,7 +1810,7 @@ async function signup() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  const res = await fetch('${API_BASE}/api/signup', {
+  const res = await fetch(`${API_BASE}/api/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, email, password })
@@ -1824,7 +1824,7 @@ async function login() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  const res = await fetch('${API_BASE}/api/login', {
+  const res = await fetch(`${API_BASE}/api/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password })
@@ -1837,8 +1837,8 @@ async function login() {
 // Get user function
 async function getUser() {
   const token = localStorage.getItem("token");
-  const res = await fetch('${API_BASE}/api/me', {
-    headers: { Authorization: Bearer ${token} }
+  const res = await fetch(`${API_BASE}/api/me`, {
+    headers: { Authorization: `Bearer ${token}` }
   });
   const data = await res.json();
   alert(JSON.stringify(data));
@@ -1846,6 +1846,7 @@ async function getUser() {
 </script> </body>    
 
 </html> 
+
 
 
 
