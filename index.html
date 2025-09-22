@@ -1596,47 +1596,41 @@ async function getUser() {
         contextMenu.classList.remove('visible');    
     });    
   
-    // AI Engine Integration    
-    async function runAIEngine(engine, prompt) {    
-        showNotification(`Initializing ${engine}...`, 'info', 'AI Engine');    
-            
-        try {    
-            const response = await fetch('https://api.openai.com/v1/chat/completions', {    
-                method: 'POST',    
-                headers: {    
-                    'Content-Type': 'application/json',    
-                    'Authorization': `Bearer ${OPENAI_API_KEY}`    
-                },    
-                body: JSON.stringify({    
-                    model: 'gpt-4',    
-                    messages: [    
-                        {    
-                            role: 'system',    
-                            content: `You are a specialized ${engine} AI. Provide detailed, technical analysis and recommendations.`    
-                        },    
-                        {    
-                            role: 'user',    
-                            content: prompt    
-                        }    
-                    ],    
-                    max_tokens: 1000,    
-                    temperature: 0.7    
-                })    
-            });    
+  // AI Engine Integration
+async function runAIEngine(engine, prompt) {
+  showNotification(Initializing ${engine}..., 'info', 'AI Engine');
   
-            const data = await response.json();    
-            if (data.choices && data.choices.length > 0) {    
-                const result = data.choices[0].message.content;    
-                showNotification(`${engine} analysis completed`, 'success', 'AI Engine');    
-                return result;    
-            } else {    
-                throw new Error('Invalid response from AI engine');    
-            }    
-        } catch (error) {    
-            showNotification(`AI Engine error: ${error.message}`, 'error', 'AI Engine');    
-            console.error('AI Engine error:', error);    
-        }    
-    }    
+  const token = localStorage.getItem("token"); // Get the user's token
+
+  if (!token) {
+    showNotification('Authentication required to run AI engine.', 'error');
+    return;
+  }
+  
+  try {
+    const response = await fetch(${API_BASE}/api/ai-chat, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': Bearer ${token} // Send the user's token
+      },
+      body: JSON.stringify({ engine, prompt })
+    });
+
+    const data = await response.json();
+    
+    if (response.ok) {
+      showNotification(${engine} analysis completed, 'success', 'AI Engine');
+      console.log(${engine} reply:, data.reply);
+      return data.reply;
+    } else {
+      throw new Error(data.error || 'Unknown error');
+    }
+  } catch (error) {
+    showNotification(AI Engine error: ${error.message}, 'error', 'AI Engine');
+    console.error('AI Engine error:', error);
+  }
+}
   
     // Export Functions    
     function exportAsPDF() {    
@@ -1846,6 +1840,7 @@ async function getUser() {
 </script> </body>    
 
 </html> 
+
 
 
 
