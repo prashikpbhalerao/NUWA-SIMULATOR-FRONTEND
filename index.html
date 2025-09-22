@@ -1868,6 +1868,59 @@ async function getUser() {
   const data = await res.json();
   alert(JSON.stringify(data));
 }
+    // Function to save the current simulation state
+async function saveSimulation(name) {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        showNotification("Please log in to save.", "error");
+        return;
+    }
+
+    // Capture the state of the Three.js scene
+    const sceneObjects = [];
+    scene.traverse(function(object) {
+        // We only want to save the user-created objects, not lights, camera, or Mars surface
+        if (object.isMesh && object.name && object.name.startsWith('user_')) {
+            sceneObjects.push({
+                name: object.name,
+                position: object.position.toArray(),
+                rotation: object.rotation.toArray(),
+                scale: object.scale.toArray(),
+                material: object.material.name, // Assuming materials have names
+                geometry: object.geometry.name, // Assuming geometries have names
+                // Add any other properties you need to save
+            });
+        }
+    });
+
+    const simulationData = {
+        metrics: state.simulation.metrics,
+        time: state.simulation.time,
+        objects: sceneObjects
+    };
+
+    try {
+        const response = await fetch(${API_BASE}/api/simulations/save, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': Bearer ${token}
+            },
+            body: JSON.stringify({ name: name, data: simulationData })
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            showNotification("Simulation saved successfully!", "success", "Save Status");
+            console.log("Saved with ID:", result.simulationId);
+        } else {
+            showNotification(Save failed: ${result.error}, "error", "Save Status");
+        }
+    } catch (error) {
+        showNotification("Could not connect to server to save.", "error", "Save Status");
+        console.error("Save error:", error);
+    }
+}
 </script> const SimulationSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   name: { type: String, required: true },
@@ -1909,6 +1962,7 @@ app.get("/api/simulations", authenticateToken, async (req, res) => {
 });</body>    
 
 </html> 
+
 
 
 
