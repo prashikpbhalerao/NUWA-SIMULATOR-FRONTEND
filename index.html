@@ -1181,10 +1181,10 @@ async function getUser() {
             <span>Export</span>    
         </div>    
         <span>|</span>    
-        <div class="footer-action">    
-            <i data-lucide="settings" width="14" height="14"></i>    
-            <span>Preferences</span>    
-        </div>    
+        <div class="footer-action" onclick="saveSimulation('My First Colony')">
+    <i data-lucide="save" width="14" height="14"></i>
+    <span>Save</span>
+</div>
     </div>    
 </footer>    <!-- Modals -->    <div class="modal-overlay" id="settingsModal">    
     <div class="modal">    
@@ -1878,6 +1878,7 @@ app.get("/api/simulations", authenticateToken, async (req, res) => {
 });</body>    
 
 </html> 
+
 
 
 
