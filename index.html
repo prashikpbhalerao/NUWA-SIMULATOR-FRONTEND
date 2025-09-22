@@ -94,7 +94,38 @@ async function getUser() {
         "header header header"    
         "sidebar main panels"    
         "footer footer footer";    
-}    
+} // Function to fetch and display saved simulations
+async function fetchSavedSimulations() {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    showNotification("Please log in to view saved simulations.", "error");
+    return;
+  }
+
+  try {
+    const response = await fetch(${API_BASE}/api/simulations, {
+      method: "GET",
+      headers: {
+        "Authorization": Bearer ${token}
+      },
+    });
+
+    const simulations = await response.json();
+    if (response.ok) {
+      console.log("Saved simulations:", simulations);
+      showNotification(Found ${simulations.length} saved simulations., "info", "Saved Simulations");
+      
+      // Here you would add code to display the list of simulations to the user
+      // For now, we will just log them to the console.
+      return simulations;
+    } else {
+      throw new Error(simulations.error || "Failed to fetch simulations.");
+    }
+  } catch (error) {
+    showNotification(Error fetching simulations: ${error.message}, "error");
+    console.error("Fetch error:", error);
+  }
+}   
 <body>
   <h2>NUWA Simulator Auth Test</h2>
   <input type="text" id="username" placeholder="Username"><br>
@@ -1878,6 +1909,7 @@ app.get("/api/simulations", authenticateToken, async (req, res) => {
 });</body>    
 
 </html> 
+
 
 
 
