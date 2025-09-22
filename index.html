@@ -236,7 +236,68 @@ async function fetchSavedSimulations() {
     cursor: pointer;    
     transition: var(--transition);    
 }    
+// Function to load a specific simulation from the database
+async function loadSimulation(simulationId) {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        showNotification("Please log in to load a simulation.", "error");
+        return;
+    }
 
+    try {
+        const response = await fetch(${API_BASE}/api/simulations/${simulationId}, {
+            method: 'GET',
+            headers: {
+                'Authorization': Bearer ${token}
+            }
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            showNotification("Simulation loaded successfully!", "success", "Load Status");
+            console.log("Loaded simulation data:", result.data);
+            
+            // --- Here, you would recreate the 3D scene from the loaded data ---
+            // For now, let's just use the loaded data to populate a few things
+            // and show how it would work.
+
+            // 1. Clear the existing scene objects (optional but recommended)
+            scene.traverse(function(object) {
+                if (object.isMesh && object.name && object.name.startsWith('user_')) {
+                    scene.remove(object);
+                }
+            });
+
+            // 2. Recreate the objects from the saved data
+            result.data.objects.forEach(objData => {
+                // This is a placeholder. You would need to create a mesh based on the saved geometry and material names
+                const geometry = new THREE.BoxGeometry(1, 1, 1); // For example, assuming a box
+                const material = new THREE.MeshNormalMaterial(); // For example, assuming a default material
+                const mesh = new THREE.Mesh(geometry, material);
+
+                // Apply the saved position, rotation, and scale
+                mesh.position.fromArray(objData.position);
+                mesh.rotation.fromArray(objData.rotation);
+                mesh.scale.fromArray(objData.scale);
+                mesh.name = objData.name; // Set the name for future saves
+                
+                scene.add(mesh);
+            });
+            
+            // 3. Update other simulation metrics (if any)
+            state.simulation.metrics = result.data.metrics;
+            state.simulation.time = result.data.time;
+            
+            // 4. Optionally, update the UI to reflect the loaded state
+            
+        } else {
+            showNotification(Load failed: ${result.error}, "error", "Load Status");
+        }
+    } catch (error) {
+        showNotification("Could not connect to server to load.", "error", "Load Status");
+        console.error("Load error:", error);
+    }
+}
 .user-avatar:hover {    
     transform: scale(1.05);    
     box-shadow: 0 0 0 2px var(--primary-glow);    
@@ -1962,6 +2023,7 @@ app.get("/api/simulations", authenticateToken, async (req, res) => {
 });</body>    
 
 </html> 
+
 
 
 
