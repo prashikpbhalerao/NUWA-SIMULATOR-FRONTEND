@@ -917,7 +917,7 @@ async function fetchSavedSimulations() {
                 <div class="team-indicator">    
                     <span>👥 Team Alpha</span>    
                 </div>    
-                <div class="user-avatar">JD</div>    
+                <div class="user-avatar">PB</div>    
             </div>    
         </div>    
     </header>  <!-- Sidebar Navigation -->    
@@ -950,10 +950,10 @@ async function fetchSavedSimulations() {
         </div>    
     </div>    <div class="nav-section">    
     <div class="nav-title">Simulations</div>    
-    <div class="nav-item">    
-        <i class="nav-icon" data-lucide="play"></i>    
-        <span>Current Projects</span>    
-    </div>    
+    <div class="nav-item" onclick="fetchSavedSimulations()">
+    <i class="nav-icon" data-lucide="play"></i>
+    <span>Current Projects</span>
+</div>
     <div class="nav-item">    
         <i class="nav-icon" data-lucide="folder"></i>    
         <span>Templates</span>    
@@ -1909,6 +1909,7 @@ app.get("/api/simulations", authenticateToken, async (req, res) => {
 });</body>    
 
 </html> 
+
 
 
 
