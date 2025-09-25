@@ -151,7 +151,50 @@ async function fetchSavedSimulations() {
     if (response.ok) {
       console.log("Saved simulations:", simulations);
       showNotification(Found ${simulations.length} saved simulations., "info", "Saved Simulations");
-      
+
+        // Function to start the payment process for a specific plan
+async function upgradeToPro(planName) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    showNotification("Please log in to upgrade.", "error");
+    return;
+  }
+
+  // Get the price based on the selected plan name
+  const amount = SUBSCRIPTION_PLANS[planName];
+  if (!amount) {
+    showNotification("Invalid plan selected.", "error");
+    return;
+  }
+
+  const currency = 'usd'; // Using USD as currency
+
+  showNotification(`Initiating payment for ${planName} plan...`, "info");
+
+  try {
+    const response = await fetch(`${API_BASE}/api/create-payment`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ amount, currency, plan: planName })
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      showNotification("Payment generated successfully! Please complete the payment.", "success");
+      // Redirect the user to the NowPayments payment page
+      window.open(result.invoice_url, '_blank');
+    } else {
+      throw new Error(result.error || "Failed to create payment.");
+    }
+  } catch (error) {
+    showNotification(`Payment error: ${error.message}`, "error");
+    console.error("Payment error:", error);
+  }
+}
       // Here you would add code to display the list of simulations to the user
       // For now, we will just log them to the console.
       return simulations;
@@ -1015,7 +1058,7 @@ async function loadSimulation(simulationId) {
                 <div class="team-indicator">    
                     <span>👥 Team Alpha</span>    
                 </div>    
-                <div class="user-avatar">PB</div>    
+                <div class="user-avatar">PPB</div>    
             </div>    
         </div>    
     </header>  <!-- Sidebar Navigation -->    
@@ -1425,7 +1468,7 @@ async function loadSimulation(simulationId) {
             energyGrid: { active: false, cpu: 22, ram: 2.1 }    
         },    
         user: {    
-            name: "John Doe",    
+            name: "Prashik Pravin Bhalerao",    
             team: "Team Alpha",    
             role: "admin",    
             subscription: "enterprise"    
@@ -2060,6 +2103,7 @@ app.get("/api/simulations", authenticateToken, async (req, res) => {
 });</body>    
 
 </html> 
+
 
 
 
